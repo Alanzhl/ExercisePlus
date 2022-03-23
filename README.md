@@ -1,3 +1,23 @@
+# Directory Structure
+
+- api: directory for backend logics
+        - controllers: controller logics that handles proxied requests from the frontend
+        - models: initialization of SQLAlchemy handler (db) and definition of database tables
+        - init: methods that configures the flask app instance and SQLAlchemy handler (db)
+        - config: all static and global configs for the backend
+- public: public resources (icons, images) for the frontend, and the server entry (index.html)
+- src: directory for frontend designs
+        - .babelrc: reduce redundancy for npm compilation commands
+        - xxx.jsx: jsx codes for design purpose, can be compiled with `npm run compile` (one-time compilation) or `npm run watch` (real-time compilation, needs a separate screen/terminal)
+        - xxx.js: js code compiled from xxx.jsx (except for index.js)
+        - xxx.css: stylesheets for xxx.js/xxx.jsx
+- package.json: node packages and configs
+- package-lock.json (delete it if exists!)
+- README.md: Description of the project
+- server.py: used to manually start the backend server (only used in dev stage!)
+
+
+
 # Setup Guidance (for Linux)
 
 ## Step 0: Preparation
