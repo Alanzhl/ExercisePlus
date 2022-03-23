@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "./App.css";
-import { Layout, Input, Image } from 'antd';
+import { Layout, Input, Image, Button, Space, List } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
@@ -11,6 +11,7 @@ const { Search } = Input;
 export default function App() {
     // sample state value
     const [visitor, setVisitor] = useState("");
+    const [samples, setSamples] = useState([]);
     
     // this function is triggered on pressing the search button inside "Searchbar"
     async function onSearch(val) {
@@ -21,7 +22,8 @@ export default function App() {
         }
     }
 
-    // return the layout of the mainpage
+    // return the layout of the mainpage 
+    // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
     return (
         <>
         <Layout>
@@ -34,7 +36,7 @@ export default function App() {
                 </Content>
             </Layout>
             <Sider width="30%" className="frame-sider">
-                <ResultColumn visitor={visitor}/>
+                <ResultColumn visitor={visitor} samples={samples} setSamples={setSamples}/>
             </Sider>
         </Layout>
         </>
@@ -42,7 +44,7 @@ export default function App() {
 }
 
 
-// Component at the header
+// 1. Component at the header: a sample search bar (only supports generation of a welcome message)
 function Searchbar(props) {
     return (
         <Search
@@ -57,42 +59,80 @@ function Searchbar(props) {
 }
 
 
-// Component that would display the map
+// 2. Component that would display the map: only contains a static picture by now
 function DisplayMap() {
     return (
         <Image 
             src="/sample-map.png"
-            weight={900}
-            height={600}
+            weight={1000}
+            height={670}
         />
     );
 }
 
 
-// Component that lists the search results
+// 3. Component that lists the search results
 function ResultColumn(props) {
+    // In this sample implementation, we don't have enough data to conduct a search, so this is only 
+    // a responsive component that generates a welcome message with the visitor's name collected from 
+    // the search bar.
+    // This component also contains three buttons and a list to test interactions with the database.
+
     const welcomeText = props.visitor !== "" ? (
         <h2>Welcome, {props.visitor}!</h2>
     ) : (
         <h2>Please input your name to generate the welcome message!</h2>
     );
 
+    // helper methods used in this component (triggered when clicking the corresponding buttons)
+    async function insertSamples() {
+        await fetch("/api/insertSamples", create_postREQ());
+    }
+
+    async function deleteSamples() {
+        await fetch("/api/clearSamples", create_postREQ());
+    }
+
+    async function listSamples() {
+        const resp = await fetch("/api/listSamples", create_postREQ());
+        const result = await resp.json();
+        console.log(result["values"]);
+        props.setSamples(result["values"]);
+    }
+
+    // return value: a combination of sub-components enclosed by <></> (i.e., <div></div>)
     return (
-        <>{welcomeText}</>
+        <>
+            {welcomeText}
+            <Space direction="vertical">
+                <Button type="primary" onClick={insertSamples}>Insert Samples</Button>
+                <Button danger onClick={deleteSamples}>Clear Samples</Button>
+                <Button onClick={listSamples}>List Samples</Button>
+            </Space>
+            <List
+                bordered
+                dataSource={props.samples}
+                renderItem={item => (
+                    <List.Item>{item["name"] + ": " + item["description"]}</List.Item>
+                )}
+            />
+        </>
     );
 }
 
 
 // helper function: create a post request with this template
-function create_postREQ(body) {
-    return {
+function create_postREQ(body=null) {
+    var payload = {
         method: "POST",
         credentials: "include",
         headers: {
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body)
+        }
     }
+    if (body != null) payload["body"] = JSON.stringify(body)
+
+    return payload
 }
 
 export {App, create_postREQ};
