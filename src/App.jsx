@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "./App.css";
-import { Layout, Input, Image, Button, Space, List } from 'antd';
+import { Layout, Input, Image, Space, List, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
@@ -9,16 +9,23 @@ const { Search } = Input;
 
 // service framework
 export default function App() {
-    // sample state value
-    const [visitor, setVisitor] = useState("");
-    const [samples, setSamples] = useState([]);
+    // sample state values
+    const [inputVal, setInputVal] = useState("");
+    const [weathers, setWeathers] = useState([]);
+    const [parks, setParks] = useState([]);
+    const [gyms, setGyms] = useState([]);
     
     // this function is triggered on pressing the search button inside "Searchbar"
     async function onSearch(val) {
         const resp = await fetch("/api/search", create_postREQ({target: val}));    // wait for execution to complete
-        const returnVal = await resp.json();    // get result in json format
+        const returnVal = await resp.json();            // get result in json format
         if (returnVal["success"] !== 0) {
-            setVisitor(returnVal["message"]);         // change the state value accordingly
+            setInputVal(val);
+            setWeathers(returnVal["weathers"]);         // change the state value accordingly
+            setParks(returnVal["parks"]);
+            setGyms(returnVal["gyms"]);
+        } else {
+            setInputVal(val);
         }
     }
 
@@ -36,7 +43,12 @@ export default function App() {
                 </Content>
             </Layout>
             <Sider width="30%" className="frame-sider">
-                <ResultColumn visitor={visitor} samples={samples} setSamples={setSamples}/>
+                <ResultColumn 
+                    inputVal={inputVal}
+                    weathers={weathers}
+                    parks={parks}
+                    gyms={gyms}
+                />
             </Sider>
         </Layout>
         </>
@@ -44,11 +56,11 @@ export default function App() {
 }
 
 
-// 1. Component at the header: a sample search bar (only supports generation of a welcome message)
+// 1. Component at the header: a sample search bar (only returns fixed contents for testing purpose)
 function Searchbar(props) {
     return (
         <Search
-            placeholder="Enter your visitor name to generate a welcome message"
+            placeholder="Enter your workout destination!"
             allowClear
             enterButton="Search"
             size="large"
@@ -74,56 +86,73 @@ function DisplayMap() {
 // 3. Component that lists the search results
 function ResultColumn(props) {
     // In this sample implementation, we don't have enough data to conduct a search, so this is only 
-    // a responsive component that generates a welcome message with the visitor's name collected from 
-    // the search bar.
-    // This component also contains three buttons and a list to test interactions with the database.
+    // a responsive component displaying fixed contents including a list of weather, parks and gyms
 
-    const welcomeText = props.visitor !== "" ? (
-        <h2>Welcome, {props.visitor}!</h2>
-    ) : (
-        <h2>Please input your name to generate the welcome message!</h2>
-    );
-
-    // helper methods used in this component (triggered when clicking the corresponding buttons)
-    async function insertSamples() {
-        await fetch("/api/insertSamples", create_postREQ());
-    }
-
-    async function deleteSamples() {
-        await fetch("/api/clearSamples", create_postREQ());
-    }
-
-    async function listSamples() {
-        const resp = await fetch("/api/listSamples", create_postREQ());
-        const result = await resp.json();
-        console.log(result["values"]);
-        props.setSamples(result["values"]);
-    }
-
-    // return value: a combination of sub-components enclosed by <></> (i.e., <div></div>)
-    return (
+    // local values / variables can also be used as components
+    // contains an empty column / results with 3 lists: weather forecast for nearby areas, parks and gyms
+    // (multiple components should be enclosed with <></> (i.e., <div></div>))
+    const resultContent = props.inputVal !== "" ? (
         <>
-            {welcomeText}
-            <Space direction="vertical">
-                <Button type="primary" onClick={insertSamples}>Insert Samples</Button>
-                <Button danger onClick={deleteSamples}>Clear Samples</Button>
-                <Button onClick={listSamples}>List Samples</Button>
-            </Space>
+            <h2>Search result of "{props.inputVal}":</h2>
+            <Divider>Weather Forecast</Divider>
             <List
                 bordered
-                dataSource={props.samples}
+                dataSource={props.weathers}
                 renderItem={item => (
-                    <List.Item>{item["name"] + ": " + item["description"]}</List.Item>
+                    <List.Item>
+                        <List.Item.Meta
+                            title={item["name"]}
+                            description={item["weather"]}
+                        />
+                    </List.Item>
+                )}
+            />
+            <Divider>Nearby Parks</Divider>
+            <List
+                bordered
+                dataSource={props.parks}
+                renderItem={item => (
+                    <List.Item>
+                        <List.Item.Meta
+                            title={item["name"]}
+                            description={<Space direction="vertical">
+                                <p>({item["longitude"]}, {item["latitude"]})<br/>
+                                    {item.description}</p>
+                            </Space>}
+                        />
+                    </List.Item>
+                )}
+            />
+            <Divider>Nearby Gyms</Divider>
+            <List
+                bordered
+                dataSource={props.gyms}
+                renderItem={item => (
+                    <List.Item>
+                        <List.Item.Meta
+                            title={item["name"]}
+                            description={<Space direction="vertical">
+                                <p>({item["longitude"]}, {item["latitude"]})<br/>
+                                    {item.description}</p>
+                            </Space>}
+                        />
+                    </List.Item>
                 )}
             />
         </>
+    ) : (
+        <h2>The Result Column is empty.</h2>
     );
+
+    return (<>
+        {resultContent}
+    </>);
 }
 
 
 // helper function: create a post request with this template
 function create_postREQ(body=null) {
-    var payload = {
+    let payload = {
         method: "POST",
         credentials: "include",
         headers: {

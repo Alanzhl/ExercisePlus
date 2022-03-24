@@ -6,7 +6,7 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 
 from api.config import Config
 from api.controllers.controller_main import bp
-from api.models import db
+# from api.models import db
 
 
 # method to create a flask app instance
@@ -14,8 +14,8 @@ def create_app(configs="api.config.Config"):
     app = Flask(__name__)
     with app.app_context():
         app.config.from_object(configs)
-        init_db(app)
-        app.db = db
+        # init_db(app)
+        # app.db = db
 
     CORS(app)
     app.register_blueprint(bp)

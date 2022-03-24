@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Layout, Input, Image, Button, Space, List } from 'antd';
+import { Layout, Input, Image, Space, List, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 const {
   Header,
@@ -12,9 +12,11 @@ const {
 } = Input; // service framework
 
 export default function App() {
-  // sample state value
-  const [visitor, setVisitor] = useState("");
-  const [samples, setSamples] = useState([]); // this function is triggered on pressing the search button inside "Searchbar"
+  // sample state values
+  const [inputVal, setInputVal] = useState("");
+  const [weathers, setWeathers] = useState([]);
+  const [parks, setParks] = useState([]);
+  const [gyms, setGyms] = useState([]); // this function is triggered on pressing the search button inside "Searchbar"
 
   async function onSearch(val) {
     const resp = await fetch("/api/search", create_postREQ({
@@ -24,7 +26,13 @@ export default function App() {
     const returnVal = await resp.json(); // get result in json format
 
     if (returnVal["success"] !== 0) {
-      setVisitor(returnVal["message"]); // change the state value accordingly
+      setInputVal(val);
+      setWeathers(returnVal["weathers"]); // change the state value accordingly
+
+      setParks(returnVal["parks"]);
+      setGyms(returnVal["gyms"]);
+    } else {
+      setInputVal(val);
     }
   } // return the layout of the mainpage 
   // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
@@ -38,15 +46,16 @@ export default function App() {
     width: "30%",
     className: "frame-sider"
   }, /*#__PURE__*/React.createElement(ResultColumn, {
-    visitor: visitor,
-    samples: samples,
-    setSamples: setSamples
+    inputVal: inputVal,
+    weathers: weathers,
+    parks: parks,
+    gyms: gyms
   }))));
-} // 1. Component at the header: a sample search bar (only supports generation of a welcome message)
+} // 1. Component at the header: a sample search bar (only returns fixed contents for testing purpose)
 
 function Searchbar(props) {
   return /*#__PURE__*/React.createElement(Search, {
-    placeholder: "Enter your visitor name to generate a welcome message",
+    placeholder: "Enter your workout destination!",
     allowClear: true,
     enterButton: "Search",
     size: "large",
@@ -69,47 +78,42 @@ function DisplayMap() {
 
 function ResultColumn(props) {
   // In this sample implementation, we don't have enough data to conduct a search, so this is only 
-  // a responsive component that generates a welcome message with the visitor's name collected from 
-  // the search bar.
-  // This component also contains three buttons and a list to test interactions with the database.
-  const welcomeText = props.visitor !== "" ? /*#__PURE__*/React.createElement("h2", null, "Welcome, ", props.visitor, "!") : /*#__PURE__*/React.createElement("h2", null, "Please input your name to generate the welcome message!"); // helper methods used in this component (triggered when clicking the corresponding buttons)
-
-  async function insertSamples() {
-    await fetch("/api/insertSamples", create_postREQ());
-  }
-
-  async function deleteSamples() {
-    await fetch("/api/clearSamples", create_postREQ());
-  }
-
-  async function listSamples() {
-    const resp = await fetch("/api/listSamples", create_postREQ());
-    const result = await resp.json();
-    console.log(result["values"]);
-    props.setSamples(result["values"]);
-  } // return value: a combination of sub-components enclosed by <></> (i.e., <div></div>)
-
-
-  return /*#__PURE__*/React.createElement(React.Fragment, null, welcomeText, /*#__PURE__*/React.createElement(Space, {
-    direction: "vertical"
-  }, /*#__PURE__*/React.createElement(Button, {
-    type: "primary",
-    onClick: insertSamples
-  }, "Insert Samples"), /*#__PURE__*/React.createElement(Button, {
-    danger: true,
-    onClick: deleteSamples
-  }, "Clear Samples"), /*#__PURE__*/React.createElement(Button, {
-    onClick: listSamples
-  }, "List Samples")), /*#__PURE__*/React.createElement(List, {
+  // a responsive component displaying fixed contents including a list of weather, parks and gyms
+  // local values / variables can also be used as components
+  // contains an empty column / results with 3 lists: weather forecast for nearby areas, parks and gyms
+  // (multiple components should be enclosed with <></> (i.e., <div></div>))
+  const resultContent = props.inputVal !== "" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", null, "Search result of \"", props.inputVal, "\":"), /*#__PURE__*/React.createElement(Divider, null, "Weather Forecast"), /*#__PURE__*/React.createElement(List, {
     bordered: true,
-    dataSource: props.samples,
-    renderItem: item => /*#__PURE__*/React.createElement(List.Item, null, item["name"] + ": " + item["description"])
-  }));
+    dataSource: props.weathers,
+    renderItem: item => /*#__PURE__*/React.createElement(List.Item, null, /*#__PURE__*/React.createElement(List.Item.Meta, {
+      title: item["name"],
+      description: item["weather"]
+    }))
+  }), /*#__PURE__*/React.createElement(Divider, null, "Nearby Parks"), /*#__PURE__*/React.createElement(List, {
+    bordered: true,
+    dataSource: props.parks,
+    renderItem: item => /*#__PURE__*/React.createElement(List.Item, null, /*#__PURE__*/React.createElement(List.Item.Meta, {
+      title: item["name"],
+      description: /*#__PURE__*/React.createElement(Space, {
+        direction: "vertical"
+      }, /*#__PURE__*/React.createElement("p", null, "(", item["longitude"], ", ", item["latitude"], ")", /*#__PURE__*/React.createElement("br", null), item.description))
+    }))
+  }), /*#__PURE__*/React.createElement(Divider, null, "Nearby Gyms"), /*#__PURE__*/React.createElement(List, {
+    bordered: true,
+    dataSource: props.gyms,
+    renderItem: item => /*#__PURE__*/React.createElement(List.Item, null, /*#__PURE__*/React.createElement(List.Item.Meta, {
+      title: item["name"],
+      description: /*#__PURE__*/React.createElement(Space, {
+        direction: "vertical"
+      }, /*#__PURE__*/React.createElement("p", null, "(", item["longitude"], ", ", item["latitude"], ")", /*#__PURE__*/React.createElement("br", null), item.description))
+    }))
+  })) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty.");
+  return /*#__PURE__*/React.createElement(React.Fragment, null, resultContent);
 } // helper function: create a post request with this template
 
 
 function create_postREQ(body = null) {
-  var payload = {
+  let payload = {
     method: "POST",
     credentials: "include",
     headers: {
