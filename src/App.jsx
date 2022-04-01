@@ -6,6 +6,8 @@ import { SearchOutlined } from '@ant-design/icons';
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
 
+const INVOKE_URL = "https://e5mm4kas75.execute-api.ap-southeast-1.amazonaws.com/dev/"
+
 
 // service framework
 export default function App() {
@@ -17,16 +19,18 @@ export default function App() {
     
     // this function is triggered on pressing the search button inside "Searchbar"
     async function onSearch(val) {
-        const resp = await fetch("/api/search", create_postREQ({target: val}));    // wait for execution to complete
+        const resp = await fetch(INVOKE_URL, create_postREQ({target: val}));    // wait for execution to complete
         const returnVal = await resp.json();            // get result in json format
-        if (returnVal["success"] !== 0) {
-            setInputVal(val);
-            setWeathers(returnVal["weathers"]);         // change the state value accordingly
-            setParks(returnVal["parks"]);
-            setGyms(returnVal["gyms"]);
-        } else {
-            setInputVal(val);
-        }
+        // if (returnVal["success"] !== 0) {
+        //     setInputVal(val);
+        //     setWeathers(returnVal["weathers"]);         // change the state value accordingly
+        //     setParks(returnVal["parks"]);
+        //     setGyms(returnVal["gyms"]);
+        // } else {
+        //     setInputVal(val);
+        // }
+        setInputVal(val);
+        setWeathers(returnVal.body);
     }
 
     // return the layout of the mainpage 
@@ -141,7 +145,7 @@ function ResultColumn(props) {
             />
         </>
     ) : (
-        <h2>The Result Column is empty. Test, test!</h2>
+        <h2>The Result Column is empty.</h2>
     );
 
     return (<>
@@ -157,7 +161,8 @@ function create_postREQ(body=null) {
         credentials: "include",
         headers: {
             "Content-Type": "application/json",
-        }
+        },
+        redirect: "follow"
     }
     if (body != null) payload["body"] = JSON.stringify(body)
 

@@ -9,7 +9,8 @@ const {
 } = Layout;
 const {
   Search
-} = Input; // service framework
+} = Input;
+const INVOKE_URL = "https://e5mm4kas75.execute-api.ap-southeast-1.amazonaws.com/dev/"; // service framework
 
 export default function App() {
   // sample state values
@@ -19,21 +20,22 @@ export default function App() {
   const [gyms, setGyms] = useState([]); // this function is triggered on pressing the search button inside "Searchbar"
 
   async function onSearch(val) {
-    const resp = await fetch("/api/search", create_postREQ({
+    const resp = await fetch(INVOKE_URL, create_postREQ({
       target: val
     })); // wait for execution to complete
 
     const returnVal = await resp.json(); // get result in json format
+    // if (returnVal["success"] !== 0) {
+    //     setInputVal(val);
+    //     setWeathers(returnVal["weathers"]);         // change the state value accordingly
+    //     setParks(returnVal["parks"]);
+    //     setGyms(returnVal["gyms"]);
+    // } else {
+    //     setInputVal(val);
+    // }
 
-    if (returnVal["success"] !== 0) {
-      setInputVal(val);
-      setWeathers(returnVal["weathers"]); // change the state value accordingly
-
-      setParks(returnVal["parks"]);
-      setGyms(returnVal["gyms"]);
-    } else {
-      setInputVal(val);
-    }
+    setInputVal(val);
+    setWeathers(returnVal.body);
   } // return the layout of the mainpage 
   // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
 
@@ -107,7 +109,7 @@ function ResultColumn(props) {
         direction: "vertical"
       }, /*#__PURE__*/React.createElement("p", null, "(", item["longitude"], ", ", item["latitude"], ")", /*#__PURE__*/React.createElement("br", null), item.description))
     }))
-  })) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty. Test, test!");
+  })) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty.");
   return /*#__PURE__*/React.createElement(React.Fragment, null, resultContent);
 } // helper function: create a post request with this template
 
@@ -118,7 +120,8 @@ function create_postREQ(body = null) {
     credentials: "include",
     headers: {
       "Content-Type": "application/json"
-    }
+    },
+    redirect: "follow"
   };
   if (body != null) payload["body"] = JSON.stringify(body);
   return payload;
