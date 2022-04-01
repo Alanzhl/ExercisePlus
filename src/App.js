@@ -26,10 +26,7 @@ export default function App() {
 
     const resp_json = await resp.json(); // get result in json format
 
-    const returnVal = resp_json.body;
-    alert(typeof returnVal);
-    alert(returnVal["weathers"]);
-    alert(typeof returnVal["weathers"]);
+    const returnVal = JSON.parse(resp_json.body);
 
     if (returnVal["success"] !== 0) {
       setInputVal(val);

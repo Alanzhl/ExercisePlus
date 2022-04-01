@@ -21,11 +21,8 @@ export default function App() {
     async function onSearch(val) {
         const resp = await fetch(INVOKE_URL, create_postREQ({target: val}));    // wait for execution to complete
         const resp_json = await resp.json();            // get result in json format
-        const returnVal = resp_json.body;
+        const returnVal = JSON.parse(resp_json.body);
 
-        alert(typeof returnVal);
-        alert(returnVal["weathers"]);
-        alert(typeof returnVal["weathers"]);
         if (returnVal["success"] !== 0) {
             setInputVal(val);
             setWeathers(returnVal["weathers"]);         // change the state value accordingly
