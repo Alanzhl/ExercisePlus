@@ -156,11 +156,12 @@ function ResultColumn(props) {
 
 // helper function: create a post request with this template
 function create_postREQ(body=null) {
+    let myHeaders = new Headers()
+    myHeaders.append("Content-Type", "application/json")
+
     let payload = {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: myHeaders,
         redirect: "follow"
     }
     if (body != null) payload["body"] = JSON.stringify(body)
