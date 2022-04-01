@@ -20,17 +20,16 @@ export default function App() {
     // this function is triggered on pressing the search button inside "Searchbar"
     async function onSearch(val) {
         const resp = await fetch(INVOKE_URL, create_postREQ({target: val}));    // wait for execution to complete
-        const returnVal = await resp.json();            // get result in json format
-        // if (returnVal["success"] !== 0) {
-        //     setInputVal(val);
-        //     setWeathers(returnVal["weathers"]);         // change the state value accordingly
-        //     setParks(returnVal["parks"]);
-        //     setGyms(returnVal["gyms"]);
-        // } else {
-        //     setInputVal(val);
-        // }
-        setInputVal(val);
-        alert(returnVal.body);
+        const resp_json = await resp.json();            // get result in json format
+        const returnVal = resp_json.body;
+        if (returnVal["success"] !== 0) {
+            setInputVal(val);
+            setWeathers(returnVal["weathers"]);         // change the state value accordingly
+            setParks(returnVal["parks"]);
+            setGyms(returnVal["gyms"]);
+        } else {
+            setInputVal(val);
+        }
     }
 
     // return the layout of the mainpage 

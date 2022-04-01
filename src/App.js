@@ -24,18 +24,19 @@ export default function App() {
       target: val
     })); // wait for execution to complete
 
-    const returnVal = await resp.json(); // get result in json format
-    // if (returnVal["success"] !== 0) {
-    //     setInputVal(val);
-    //     setWeathers(returnVal["weathers"]);         // change the state value accordingly
-    //     setParks(returnVal["parks"]);
-    //     setGyms(returnVal["gyms"]);
-    // } else {
-    //     setInputVal(val);
-    // }
+    const resp_json = await resp.json(); // get result in json format
 
-    setInputVal(val);
-    alert(returnVal.body);
+    const returnVal = resp_json.body;
+
+    if (returnVal["success"] !== 0) {
+      setInputVal(val);
+      setWeathers(returnVal["weathers"]); // change the state value accordingly
+
+      setParks(returnVal["parks"]);
+      setGyms(returnVal["gyms"]);
+    } else {
+      setInputVal(val);
+    }
   } // return the layout of the mainpage 
   // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
 
