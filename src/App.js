@@ -27,6 +27,7 @@ export default function App() {
     const resp_json = await resp.json(); // get result in json format
 
     const returnVal = resp_json.body;
+    alert(returnVal);
 
     if (returnVal["success"] !== 0) {
       setInputVal(val);

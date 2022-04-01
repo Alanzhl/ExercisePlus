@@ -22,6 +22,9 @@ export default function App() {
         const resp = await fetch(INVOKE_URL, create_postREQ({target: val}));    // wait for execution to complete
         const resp_json = await resp.json();            // get result in json format
         const returnVal = resp_json.body;
+
+        alert(returnVal);
+
         if (returnVal["success"] !== 0) {
             setInputVal(val);
             setWeathers(returnVal["weathers"]);         // change the state value accordingly
