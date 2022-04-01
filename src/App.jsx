@@ -158,7 +158,6 @@ function ResultColumn(props) {
 function create_postREQ(body=null) {
     let payload = {
         method: "POST",
-        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
