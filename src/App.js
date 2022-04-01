@@ -35,7 +35,7 @@ export default function App() {
     // }
 
     setInputVal(val);
-    setWeathers(returnVal.body);
+    alert(returnVal.body);
   } // return the layout of the mainpage 
   // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
 

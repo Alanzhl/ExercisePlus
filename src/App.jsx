@@ -30,7 +30,7 @@ export default function App() {
         //     setInputVal(val);
         // }
         setInputVal(val);
-        setWeathers(returnVal.body);
+        alert(returnVal.body);
     }
 
     // return the layout of the mainpage 
