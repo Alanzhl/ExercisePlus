@@ -141,7 +141,7 @@ function ResultColumn(props) {
             />
         </>
     ) : (
-        <h2>The Result Column is empty.</h2>
+        <h2>The Result Column is empty. Test, test!</h2>
     );
 
     return (<>

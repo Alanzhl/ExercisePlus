@@ -107,7 +107,7 @@ function ResultColumn(props) {
         direction: "vertical"
       }, /*#__PURE__*/React.createElement("p", null, "(", item["longitude"], ", ", item["latitude"], ")", /*#__PURE__*/React.createElement("br", null), item.description))
     }))
-  })) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty.");
+  })) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty. Test, test!");
   return /*#__PURE__*/React.createElement(React.Fragment, null, resultContent);
 } // helper function: create a post request with this template
 
