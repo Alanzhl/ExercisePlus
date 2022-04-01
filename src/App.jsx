@@ -162,6 +162,7 @@ function create_postREQ(body=null) {
     let payload = {
         method: "POST",
         headers: myHeaders,
+        credentials: "omit",
         redirect: "follow"
     }
     if (body != null) payload["body"] = JSON.stringify(body)
