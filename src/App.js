@@ -115,12 +115,12 @@ function ResultColumn(props) {
 
 
 function create_postREQ(body = null) {
+  let myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
   let payload = {
     method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: myHeaders,
+    credentials: "omit",
     redirect: "follow"
   };
   if (body != null) payload["body"] = JSON.stringify(body);
