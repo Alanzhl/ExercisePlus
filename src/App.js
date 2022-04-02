@@ -10,7 +10,7 @@ const {
 const {
   Search
 } = Input;
-const INVOKE_URL = "https://e5mm4kas75.execute-api.ap-southeast-1.amazonaws.com/dev/"; // service framework
+const INVOKE_URL = "https://j9fazolf64.execute-api.ap-southeast-1.amazonaws.com/dev/"; // service framework
 
 export default function App() {
   // sample state values
@@ -20,7 +20,7 @@ export default function App() {
   const [gyms, setGyms] = useState([]); // this function is triggered on pressing the search button inside "Searchbar"
 
   async function onSearch(val) {
-    const resp = await fetch(INVOKE_URL, create_postREQ({
+    const resp = await fetch(INVOKE_URL + "search", create_postREQ({
       target: val
     })); // wait for execution to complete
 

@@ -6,7 +6,7 @@ import { SearchOutlined } from '@ant-design/icons';
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
 
-const INVOKE_URL = "https://e5mm4kas75.execute-api.ap-southeast-1.amazonaws.com/dev/"
+const INVOKE_URL = "https://j9fazolf64.execute-api.ap-southeast-1.amazonaws.com/dev/"
 
 
 // service framework
@@ -19,7 +19,7 @@ export default function App() {
     
     // this function is triggered on pressing the search button inside "Searchbar"
     async function onSearch(val) {
-        const resp = await fetch(INVOKE_URL, create_postREQ({target: val}));    // wait for execution to complete
+        const resp = await fetch(INVOKE_URL + "search", create_postREQ({target: val}));    // wait for execution to complete
         const resp_json = await resp.json();            // get result in json format
         const returnVal = JSON.parse(resp_json.body);
 
