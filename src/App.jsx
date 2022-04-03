@@ -20,43 +20,48 @@ export default function App() {
     
     // this function is triggered on pressing the search button inside "Searchbar"
     async function onSearch(val) {
-        const resp = await fetch(INVOKE_URL + "search", create_postREQ({target: val}));    // wait for execution to complete
-        const resp_json = await resp.json();            // get result in json format
-        const returnVal = JSON.parse(resp_json.body);
+        if (val !== "") {
+            const resp = await fetch(INVOKE_URL + "search", create_postREQ({target: val}));    // wait for execution to complete
+            const resp_json = await resp.json();            // get result in json format
+            const returnVal = JSON.parse(resp_json.body);
 
-        if (returnVal["success"] !== 0) {
-            setInputVal(val);
-            setWeathers(returnVal["weathers"]);         // change the state value accordingly
-            setParks(returnVal["parks"]);
-            setGyms(returnVal["gyms"]);
-        } else {
-            setInputVal(val);
+            if (returnVal["success"] !== 0) {
+                setInputVal(val);
+                setWeathers(returnVal["weathers"]);         // change the state value accordingly
+                setParks(returnVal["parks"]);
+                setGyms(returnVal["gyms"]);
+            } else {
+                setInputVal(val);
+            }
         }
     }
 
     // get search options according to current input "val"
     async function getSearchOptions(val) {
-        const resp = await fetch(INVOKE_URL + "get-options", create_postREQ({target: val}));    // wait for execution to complete
-        const resp_json = await resp.json();            // get result in json format
-        const returnVal = JSON.parse(resp_json.body);
+        if (val !== "") {
+            const resp = await fetch(INVOKE_URL + "get-options", create_postREQ({target: val}));    // wait for execution to complete
+            const resp_json = await resp.json();            // get result in json format
+            console.log(resp_json);
+            const returnVal = JSON.parse(resp_json.body);
 
-        if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
-            let renderedOptions = [];
-            for (let result of returnVal["results"]["results"]) {
-                let option = {
-                    label: (
-                        <div className="search-option">
-                            <h3>{result["name"]}</h3>
-                            <p>({result["longitude"]}, {result["latitude"]})<br/>{result["address"]}</p>
-                        </div>
-                    ),
-                    value: result["name"]
-                };
-                renderedOptions.push(option);
+            if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
+                let renderedOptions = [];
+                for (let result of returnVal["results"]["results"]) {
+                    let option = {
+                        label: (
+                            <div className="search-option">
+                                <h3>{result["name"]}</h3>
+                                <p>({result["longitude"]}, {result["latitude"]})<br/>{result["address"]}</p>
+                            </div>
+                        ),
+                        value: result["name"]
+                    };
+                    renderedOptions.push(option);
+                }
+                setOptions(renderedOptions);
+            } else {
+                setOptions([]);
             }
-            setOptions(renderedOptions);
-        } else {
-            setOptions([]);
         }
     }
 

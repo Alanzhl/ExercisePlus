@@ -24,51 +24,56 @@ export default function App() {
   const [gyms, setGyms] = useState([]); // this function is triggered on pressing the search button inside "Searchbar"
 
   async function onSearch(val) {
-    const resp = await fetch(INVOKE_URL + "search", create_postREQ({
-      target: val
-    })); // wait for execution to complete
+    if (val !== "") {
+      const resp = await fetch(INVOKE_URL + "search", create_postREQ({
+        target: val
+      })); // wait for execution to complete
 
-    const resp_json = await resp.json(); // get result in json format
+      const resp_json = await resp.json(); // get result in json format
 
-    const returnVal = JSON.parse(resp_json.body);
+      const returnVal = JSON.parse(resp_json.body);
 
-    if (returnVal["success"] !== 0) {
-      setInputVal(val);
-      setWeathers(returnVal["weathers"]); // change the state value accordingly
+      if (returnVal["success"] !== 0) {
+        setInputVal(val);
+        setWeathers(returnVal["weathers"]); // change the state value accordingly
 
-      setParks(returnVal["parks"]);
-      setGyms(returnVal["gyms"]);
-    } else {
-      setInputVal(val);
+        setParks(returnVal["parks"]);
+        setGyms(returnVal["gyms"]);
+      } else {
+        setInputVal(val);
+      }
     }
   } // get search options according to current input "val"
 
 
   async function getSearchOptions(val) {
-    const resp = await fetch(INVOKE_URL + "get-options", create_postREQ({
-      target: val
-    })); // wait for execution to complete
+    if (val !== "") {
+      const resp = await fetch(INVOKE_URL + "get-options", create_postREQ({
+        target: val
+      })); // wait for execution to complete
 
-    const resp_json = await resp.json(); // get result in json format
+      const resp_json = await resp.json(); // get result in json format
 
-    const returnVal = JSON.parse(resp_json.body);
+      console.log(resp_json);
+      const returnVal = JSON.parse(resp_json.body);
 
-    if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
-      let renderedOptions = [];
+      if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
+        let renderedOptions = [];
 
-      for (let result of returnVal["results"]["results"]) {
-        let option = {
-          label: /*#__PURE__*/React.createElement("div", {
-            className: "search-option"
-          }, /*#__PURE__*/React.createElement("h3", null, result["name"]), /*#__PURE__*/React.createElement("p", null, "(", result["longitude"], ", ", result["latitude"], ")", /*#__PURE__*/React.createElement("br", null), result["address"])),
-          value: result["name"]
-        };
-        renderedOptions.push(option);
+        for (let result of returnVal["results"]["results"]) {
+          let option = {
+            label: /*#__PURE__*/React.createElement("div", {
+              className: "search-option"
+            }, /*#__PURE__*/React.createElement("h3", null, result["name"]), /*#__PURE__*/React.createElement("p", null, "(", result["longitude"], ", ", result["latitude"], ")", /*#__PURE__*/React.createElement("br", null), result["address"])),
+            value: result["name"]
+          };
+          renderedOptions.push(option);
+        }
+
+        setOptions(renderedOptions);
+      } else {
+        setOptions([]);
       }
-
-      setOptions(renderedOptions);
-    } else {
-      setOptions([]);
     }
   } // return the layout of the mainpage 
   // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
