@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Layout, Input, Image, Space, List, Divider } from 'antd';
+import { Layout, AutoComplete, Input, Image, Space, List, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 const {
   Header,
@@ -14,8 +14,12 @@ const INVOKE_URL = "https://j9fazolf64.execute-api.ap-southeast-1.amazonaws.com/
 
 export default function App() {
   // sample state values
-  const [inputVal, setInputVal] = useState("");
-  const [weathers, setWeathers] = useState([]);
+  const [inputVal, setInputVal] = useState(""); // input value
+
+  const [options, setOptions] = useState([]); // search options according to input value
+
+  const [weathers, setWeathers] = useState([]); // search results: weather, parks, gyms
+
   const [parks, setParks] = useState([]);
   const [gyms, setGyms] = useState([]); // this function is triggered on pressing the search button inside "Searchbar"
 
@@ -37,6 +41,35 @@ export default function App() {
     } else {
       setInputVal(val);
     }
+  } // get search options according to current input "val"
+
+
+  async function getSearchOptions(val) {
+    const resp = await fetch(INVOKE_URL + "get-options", create_postREQ({
+      target: val
+    })); // wait for execution to complete
+
+    const resp_json = await resp.json(); // get result in json format
+
+    const returnVal = JSON.parse(resp_json.body);
+
+    if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
+      let renderedOptions = [];
+
+      for (let result of returnVal["results"]["results"]) {
+        let option = {
+          label: /*#__PURE__*/React.createElement("div", {
+            className: "search-option"
+          }, /*#__PURE__*/React.createElement("h3", null, result["name"]), /*#__PURE__*/React.createElement("p", null, "(", result["longitude"], ", ", result["latitude"], ")", /*#__PURE__*/React.createElement("br", null), result["address"])),
+          value: result["name"]
+        };
+        renderedOptions.push(option);
+      }
+
+      setOptions(renderedOptions);
+    } else {
+      setOptions([]);
+    }
   } // return the layout of the mainpage 
   // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
 
@@ -44,7 +77,9 @@ export default function App() {
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Layout, null, /*#__PURE__*/React.createElement(Layout, null, /*#__PURE__*/React.createElement(Header, {
     className: "frame-header"
   }, /*#__PURE__*/React.createElement(Searchbar, {
-    onSearch: onSearch
+    options: options,
+    onSearch: onSearch,
+    getSearchOptions: getSearchOptions
   })), /*#__PURE__*/React.createElement(Content, null, /*#__PURE__*/React.createElement(DisplayMap, null))), /*#__PURE__*/React.createElement(Sider, {
     width: "30%",
     className: "frame-sider"
@@ -57,16 +92,21 @@ export default function App() {
 } // 1. Component at the header: a sample search bar (only returns fixed contents for testing purpose)
 
 function Searchbar(props) {
-  return /*#__PURE__*/React.createElement(Search, {
-    placeholder: "Enter your workout destination!",
-    allowClear: true,
-    enterButton: "Search",
+  return /*#__PURE__*/React.createElement(AutoComplete, {
+    className: "search-bar",
+    options: props.options,
+    onSelect: val => props.onSearch(val),
+    onSearch: val => props.getSearchOptions(val)
+  }, /*#__PURE__*/React.createElement(Search, {
     size: "large",
+    allowClear: true,
+    placeholder: "Enter your workout destination!",
     prefix: /*#__PURE__*/React.createElement(SearchOutlined, {
       className: "search-form-icon"
     }),
+    enterButton: "Search",
     onSearch: val => props.onSearch(val)
-  });
+  }));
 } // 2. Component that would display the map: only contains a static picture by now
 
 
@@ -89,8 +129,8 @@ function ResultColumn(props) {
     bordered: true,
     dataSource: props.weathers,
     renderItem: item => /*#__PURE__*/React.createElement(List.Item, null, /*#__PURE__*/React.createElement(List.Item.Meta, {
-      title: item["name"],
-      description: item["weather"]
+      title: item["area"],
+      description: item["forecast"]
     }))
   }), /*#__PURE__*/React.createElement(Divider, null, "Nearby Parks"), /*#__PURE__*/React.createElement(List, {
     bordered: true,

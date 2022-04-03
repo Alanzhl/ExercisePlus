@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "./App.css";
-import { Layout, Input, Image, Space, List, Divider } from 'antd';
+import { Layout, AutoComplete, Input, Image, Space, List, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
@@ -12,8 +12,9 @@ const INVOKE_URL = "https://j9fazolf64.execute-api.ap-southeast-1.amazonaws.com/
 // service framework
 export default function App() {
     // sample state values
-    const [inputVal, setInputVal] = useState("");
-    const [weathers, setWeathers] = useState([]);
+    const [inputVal, setInputVal] = useState("");    // input value
+    const [options, setOptions] = useState([]);      // search options according to input value
+    const [weathers, setWeathers] = useState([]);    // search results: weather, parks, gyms
     const [parks, setParks] = useState([]);
     const [gyms, setGyms] = useState([]);
     
@@ -33,6 +34,32 @@ export default function App() {
         }
     }
 
+    // get search options according to current input "val"
+    async function getSearchOptions(val) {
+        const resp = await fetch(INVOKE_URL + "get-options", create_postREQ({target: val}));    // wait for execution to complete
+        const resp_json = await resp.json();            // get result in json format
+        const returnVal = JSON.parse(resp_json.body);
+
+        if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
+            let renderedOptions = [];
+            for (let result of returnVal["results"]["results"]) {
+                let option = {
+                    label: (
+                        <div className="search-option">
+                            <h3>{result["name"]}</h3>
+                            <p>({result["longitude"]}, {result["latitude"]})<br/>{result["address"]}</p>
+                        </div>
+                    ),
+                    value: result["name"]
+                };
+                renderedOptions.push(option);
+            }
+            setOptions(renderedOptions);
+        } else {
+            setOptions([]);
+        }
+    }
+
     // return the layout of the mainpage 
     // there are three self-defined components: Searchbar, DisplayMap and ResultColumn, which are implemented below.
     return (
@@ -40,7 +67,10 @@ export default function App() {
         <Layout>
             <Layout>
                 <Header className="frame-header">
-                    <Searchbar onSearch={onSearch}/>
+                    <Searchbar 
+                        options={options}
+                        onSearch={onSearch}
+                        getSearchOptions={getSearchOptions}/>
                 </Header>
                 <Content>
                     <DisplayMap/>
@@ -63,14 +93,20 @@ export default function App() {
 // 1. Component at the header: a sample search bar (only returns fixed contents for testing purpose)
 function Searchbar(props) {
     return (
-        <Search
-            placeholder="Enter your workout destination!"
-            allowClear
-            enterButton="Search"
-            size="large"
-            prefix={<SearchOutlined className="search-form-icon" />}
-            onSearch={val => props.onSearch(val)}
-        />
+        <AutoComplete
+            className="search-bar"
+            options={props.options}
+            onSelect={val => props.onSearch(val)}
+            onSearch={val => props.getSearchOptions(val)}
+        >
+            <Search 
+                size="large" 
+                allowClear
+                placeholder="Enter your workout destination!" 
+                prefix={<SearchOutlined className="search-form-icon" />}
+                enterButton="Search"
+                onSearch={val => props.onSearch(val)} />
+        </AutoComplete>
     );
 }
 
@@ -105,8 +141,8 @@ function ResultColumn(props) {
                 renderItem={item => (
                     <List.Item>
                         <List.Item.Meta
-                            title={item["name"]}
-                            description={item["weather"]}
+                            title={item["area"]}
+                            description={item["forecast"]}
                         />
                     </List.Item>
                 )}

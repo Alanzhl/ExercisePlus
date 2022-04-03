@@ -5,3 +5,12 @@
 .frame-sider {
   background: #ffffff;
 }
+
+.search-bar {
+  width: 100%;
+}
+
+.search-option {
+  word-wrap:break-word; 
+  overflow:hidden;
+}
