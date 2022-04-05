@@ -1,7 +1,9 @@
 import React, {useState} from "react";
 import "./App.css";
-import { Layout, AutoComplete, Input, Image, Space, List, Divider } from 'antd';
+import { Layout, AutoComplete, Input, Space, List, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import { MapContainer, TileLayer, Marker, Popup} from "react-leaflet";
+import L from 'leaflet';
 
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
@@ -14,6 +16,8 @@ export default function App() {
     // sample state values
     const [inputVal, setInputVal] = useState("");    // input value
     const [options, setOptions] = useState([]);      // search options according to input value
+    const [gymMarkers, setgymMarkers] = useState([]);
+    const [parkMarkers, setparkMarkers] = useState([]);
     const [weathers, setWeathers] = useState([]);    // search results: weather, parks, gyms
     const [parks, setParks] = useState([]);
     const [gyms, setGyms] = useState([]);
@@ -27,6 +31,8 @@ export default function App() {
 
             if (returnVal["success"] !== 0) {
                 setInputVal(val);
+                setgymMarkers(returnVal["gymMarkers"]);
+                setparkMarkers(returnVal["parkMarkers"]);
                 setWeathers(returnVal["weathers"]);         // change the state value accordingly
                 setParks(returnVal["parks"]);
                 setGyms(returnVal["gyms"]);
@@ -50,11 +56,11 @@ export default function App() {
                     let option = {
                         label: (
                             <div className="search-option">
-                                <h3>{result["name"]}</h3>
+                                <h3>{result["name"].toLowerCase()}</h3>
                                 <p>({result["longitude"]}, {result["latitude"]})<br/>{result["address"]}</p>
                             </div>
                         ),
-                        value: result["name"]
+                        value: result["name"].toLowerCase()
                     };
                     renderedOptions.push(option);
                 }
@@ -78,10 +84,12 @@ export default function App() {
                         getSearchOptions={getSearchOptions}/>
                 </Header>
                 <Content>
-                    <DisplayMap/>
+                    <DisplayMap
+                        gymMarkers={gymMarkers}
+                        parkMarkers={parkMarkers}/>
                 </Content>
             </Layout>
-            <Sider width="30%" className="frame-sider">
+            <Sider width="35%" className="frame-sider">
                 <ResultColumn 
                     inputVal={inputVal}
                     weathers={weathers}
@@ -117,14 +125,40 @@ function Searchbar(props) {
 
 
 // 2. Component that would display the map: only contains a static picture by now
-function DisplayMap() {
+function DisplayMap(props) {
+    const position_center = [1.3, 103.8];
+    const pgyms = props.gymMarkers;
+    const pparks = props.parkMarkers;
+    //const pgyms = [[1.31, 103.81], [1.31, 103.799]];
+    //const pparks = [[1.305, 103.81], [1.305, 103.799]];
+
+    var greenIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+  
     return (
-        <Image 
-            src="/sample-map.png"
-            weight={1000}
-            height={670}
-        />
+        <MapContainer
+            style={{ height: "600px" }}
+            center={position_center}
+            zoom={13}
+            scrollWheelZoom={false}
+        >
+            <TileLayer
+                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <>
+                {pgyms.map((item, index) => <Marker position={item} icon={greenIcon} key={index}><Popup>find a nice gym!</Popup></Marker>)}
+                {pparks.map((item, index) => <Marker position={item} key={index}><Popup>find a nice park!</Popup></Marker>)}
+            </>      
+        </MapContainer>
     );
+    //markers.map(marker => <Marker position={marker} ></Marker>)
 }
 
 
