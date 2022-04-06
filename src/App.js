@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { Layout, AutoComplete, Input, Space, List, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from 'leaflet';
 const {
   Header,
@@ -20,8 +20,7 @@ export default function App() {
 
   const [options, setOptions] = useState([]); // search options according to input value
 
-  const [gymMarkers, setgymMarkers] = useState([]);
-  const [parkMarkers, setparkMarkers] = useState([]);
+  const [destination, setDestination] = useState({});
   const [weathers, setWeathers] = useState([]); // search results: weather, parks, gyms
 
   const [parks, setParks] = useState([]);
@@ -39,8 +38,7 @@ export default function App() {
 
       if (returnVal["success"] !== 0) {
         setInputVal(val);
-        setgymMarkers(returnVal["gymMarkers"]);
-        setparkMarkers(returnVal["parkMarkers"]);
+        setDestination(returnVal["destination"]);
         setWeathers(returnVal["weathers"]); // change the state value accordingly
 
         setParks(returnVal["parks"]);
@@ -59,8 +57,8 @@ export default function App() {
       })); // wait for execution to complete
 
       const resp_json = await resp.json(); // get result in json format
+      // console.log(resp_json);
 
-      console.log(resp_json);
       const returnVal = JSON.parse(resp_json.body);
 
       if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
@@ -92,13 +90,15 @@ export default function App() {
     onSearch: onSearch,
     getSearchOptions: getSearchOptions
   })), /*#__PURE__*/React.createElement(Content, null, /*#__PURE__*/React.createElement(DisplayMap, {
-    gymMarkers: gymMarkers,
-    parkMarkers: parkMarkers
+    destination: destination,
+    parks: parks,
+    gyms: gyms
   }))), /*#__PURE__*/React.createElement(Sider, {
     width: "35%",
     className: "frame-sider"
   }, /*#__PURE__*/React.createElement(ResultColumn, {
     inputVal: inputVal,
+    destination: destination,
     weathers: weathers,
     parks: parks,
     gyms: gyms
@@ -125,12 +125,7 @@ function Searchbar(props) {
 
 
 function DisplayMap(props) {
-  const position_center = [1.3, 103.8];
-  const pgyms = props.gymMarkers;
-  const pparks = props.parkMarkers; //const pgyms = [[1.31, 103.81], [1.31, 103.799]];
-  //const pparks = [[1.305, 103.81], [1.305, 103.799]];
-
-  var greenIcon = new L.Icon({
+  const greenIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
@@ -138,24 +133,44 @@ function DisplayMap(props) {
     popupAnchor: [1, -34],
     shadowSize: [41, 41]
   });
+  const redIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  }); // nested component that shows the place of our search result
+
+  function DestPosition() {
+    const map = useMap();
+    map.flyTo([props.destination.latitude, props.destination.longitude], 13);
+    return /*#__PURE__*/React.createElement(Marker, {
+      position: [props.destination.latitude, props.destination.longitude],
+      icon: redIcon
+    }, /*#__PURE__*/React.createElement(Popup, {
+      autoPan: true
+    }, /*#__PURE__*/React.createElement("h3", null, props.destination.name)));
+  }
+
   return /*#__PURE__*/React.createElement(MapContainer, {
     style: {
       height: "600px"
     },
-    center: position_center,
+    center: [1.3, 103.8],
     zoom: 13,
-    scrollWheelZoom: false
+    scrollWheelZoom: true
   }, /*#__PURE__*/React.createElement(TileLayer, {
     attribution: "\xA9 <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  }), /*#__PURE__*/React.createElement(React.Fragment, null, pgyms.map((item, index) => /*#__PURE__*/React.createElement(Marker, {
-    position: item,
+  }), /*#__PURE__*/React.createElement(React.Fragment, null, Object.keys(props.destination).length !== 0 ? /*#__PURE__*/React.createElement(DestPosition, null) : null, props.parks.map(item => /*#__PURE__*/React.createElement(Marker, {
+    position: [item.latitude, item.longitude],
     icon: greenIcon,
-    key: index
-  }, /*#__PURE__*/React.createElement(Popup, null, "find a nice gym!"))), pparks.map((item, index) => /*#__PURE__*/React.createElement(Marker, {
-    position: item,
-    key: index
-  }, /*#__PURE__*/React.createElement(Popup, null, "find a nice park!"))))); //markers.map(marker => <Marker position={marker} ></Marker>)
+    key: item.id
+  }, /*#__PURE__*/React.createElement(Popup, null, /*#__PURE__*/React.createElement("h3", null, item.name), /*#__PURE__*/React.createElement("p", null, item.description)))), props.gyms.map(item => /*#__PURE__*/React.createElement(Marker, {
+    position: [item.latitude, item.longitude],
+    key: item.id
+  }, /*#__PURE__*/React.createElement(Popup, null, /*#__PURE__*/React.createElement("h3", null, item.name), /*#__PURE__*/React.createElement("p", null, item.description)))))); //markers.map(marker => <Marker position={marker} ></Marker>)
 } // 3. Component that lists the search results
 
 

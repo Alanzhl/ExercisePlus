@@ -4,6 +4,8 @@
 
 .frame-sider {
   background: #ffffff;
+  height: 100vh;
+  overflow: auto;
 }
 
 .search-bar {

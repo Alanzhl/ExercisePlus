@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import "./App.css";
 import { Layout, AutoComplete, Input, Space, List, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { MapContainer, TileLayer, Marker, Popup} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap} from "react-leaflet";
 import L from 'leaflet';
 
 const { Header, Sider, Content } = Layout;
@@ -16,8 +16,7 @@ export default function App() {
     // sample state values
     const [inputVal, setInputVal] = useState("");    // input value
     const [options, setOptions] = useState([]);      // search options according to input value
-    const [gymMarkers, setgymMarkers] = useState([]);
-    const [parkMarkers, setparkMarkers] = useState([]);
+    const [destination, setDestination] = useState({});
     const [weathers, setWeathers] = useState([]);    // search results: weather, parks, gyms
     const [parks, setParks] = useState([]);
     const [gyms, setGyms] = useState([]);
@@ -31,8 +30,7 @@ export default function App() {
 
             if (returnVal["success"] !== 0) {
                 setInputVal(val);
-                setgymMarkers(returnVal["gymMarkers"]);
-                setparkMarkers(returnVal["parkMarkers"]);
+                setDestination(returnVal["destination"]);
                 setWeathers(returnVal["weathers"]);         // change the state value accordingly
                 setParks(returnVal["parks"]);
                 setGyms(returnVal["gyms"]);
@@ -47,7 +45,7 @@ export default function App() {
         if (val !== "") {
             const resp = await fetch(INVOKE_URL + "get-options", create_postREQ({target: val}));    // wait for execution to complete
             const resp_json = await resp.json();            // get result in json format
-            console.log(resp_json);
+            // console.log(resp_json);
             const returnVal = JSON.parse(resp_json.body);
 
             if (returnVal["success"] === 1 && returnVal["results"]["found"] > 0) {
@@ -85,13 +83,15 @@ export default function App() {
                 </Header>
                 <Content>
                     <DisplayMap
-                        gymMarkers={gymMarkers}
-                        parkMarkers={parkMarkers}/>
+                        destination={destination}
+                        parks={parks}
+                        gyms={gyms}/>
                 </Content>
             </Layout>
             <Sider width="35%" className="frame-sider">
                 <ResultColumn 
                     inputVal={inputVal}
+                    destination={destination}
                     weathers={weathers}
                     parks={parks}
                     gyms={gyms}
@@ -126,35 +126,70 @@ function Searchbar(props) {
 
 // 2. Component that would display the map: only contains a static picture by now
 function DisplayMap(props) {
-    const position_center = [1.3, 103.8];
-    const pgyms = props.gymMarkers;
-    const pparks = props.parkMarkers;
-    //const pgyms = [[1.31, 103.81], [1.31, 103.799]];
-    //const pparks = [[1.305, 103.81], [1.305, 103.799]];
-
-    var greenIcon = new L.Icon({
+    const greenIcon = new L.Icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
-      });
+    });
+
+    const redIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    // nested component that shows the place of our search result
+    function DestPosition() {
+        const map = useMap();
+        map.flyTo([props.destination.latitude, props.destination.longitude], 13);
+        return (
+            <Marker 
+                position={[props.destination.latitude, props.destination.longitude]} 
+                icon={redIcon}>
+                    <Popup autoPan={true}><h3>{props.destination.name}</h3></Popup>
+            </Marker>
+        );
+    }
   
     return (
         <MapContainer
             style={{ height: "600px" }}
-            center={position_center}
+            center={[1.3, 103.8]}
             zoom={13}
-            scrollWheelZoom={false}
+            scrollWheelZoom={true}
         >
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <>
-                {pgyms.map((item, index) => <Marker position={item} icon={greenIcon} key={index}><Popup>find a nice gym!</Popup></Marker>)}
-                {pparks.map((item, index) => <Marker position={item} key={index}><Popup>find a nice park!</Popup></Marker>)}
+                {(Object.keys(props.destination).length !== 0) ? <DestPosition/> : (null)}
+                {props.parks.map(item => 
+                    <Marker 
+                        position={[item.latitude, item.longitude]} 
+                        icon={greenIcon} key={item.id}>
+                            <Popup>
+                                <h3>{item.name}</h3>
+                                <p>{item.description}</p>
+                            </Popup>
+                    </Marker>
+                )}
+                {props.gyms.map(item => 
+                    <Marker 
+                        position={[item.latitude, item.longitude]} 
+                        key={item.id}>
+                            <Popup>
+                                <h3>{item.name}</h3>
+                                <p>{item.description}</p>
+                            </Popup>
+                </Marker>
+                )}
             </>      
         </MapContainer>
     );
