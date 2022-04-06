@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "./App.css";
-import { Layout, AutoComplete, Input, Space, List, Divider } from 'antd';
+import { Layout, AutoComplete, Input, Space, List, Collapse } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { MapContainer, TileLayer, Marker, Popup, useMap} from "react-leaflet";
 import L from 'leaflet';
@@ -199,60 +199,64 @@ function DisplayMap(props) {
 
 // 3. Component that lists the search results
 function ResultColumn(props) {
-    // In this sample implementation, we don't have enough data to conduct a search, so this is only 
-    // a responsive component displaying fixed contents including a list of weather, parks and gyms
-
     // local values / variables can also be used as components
     // contains an empty column / results with 3 lists: weather forecast for nearby areas, parks and gyms
     // (multiple components should be enclosed with <></> (i.e., <div></div>))
+    const { Panel } = Collapse;
+
     const resultContent = props.inputVal !== "" ? (
         <>
             <h2>Search result of "{props.inputVal}":</h2>
-            <Divider>Weather Forecast</Divider>
-            <List
-                bordered
-                dataSource={props.weathers}
-                renderItem={item => (
-                    <List.Item>
-                        <List.Item.Meta
-                            title={item["area"]}
-                            description={item["forecast"]}
-                        />
-                    </List.Item>
-                )}
-            />
-            <Divider>Nearby Parks</Divider>
-            <List
-                bordered
-                dataSource={props.parks}
-                renderItem={item => (
-                    <List.Item>
-                        <List.Item.Meta
-                            title={item["name"]}
-                            description={<Space direction="vertical">
-                                <p>({item["longitude"]}, {item["latitude"]})<br/>
-                                    {item.description}</p>
-                            </Space>}
-                        />
-                    </List.Item>
-                )}
-            />
-            <Divider>Nearby Gyms</Divider>
-            <List
-                bordered
-                dataSource={props.gyms}
-                renderItem={item => (
-                    <List.Item>
-                        <List.Item.Meta
-                            title={item["name"]}
-                            description={<Space direction="vertical">
-                                <p>({item["longitude"]}, {item["latitude"]})<br/>
-                                    {item.description}</p>
-                            </Space>}
-                        />
-                    </List.Item>
-                )}
-            />
+            <Collapse defaultActiveKey={['weather_forcast']}>
+                <Panel header="Weather Forecast" key="weather_forcast">
+                    <List
+                        bordered
+                        dataSource={props.weathers}
+                        renderItem={item => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    title={item["area"]}
+                                    description={item["forecast"]}
+                                />
+                            </List.Item>
+                        )}
+                    />
+                </Panel>
+                <Panel header="Nearby Parks" key="nearby_parks">
+                    <List
+                        bordered
+                        dataSource={props.parks}
+                        renderItem={item => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    title={item["name"]}
+                                    description={<Space direction="vertical">
+                                        <p>({item["longitude"]}, {item["latitude"]})<br/>
+                                            {item.description}</p>
+                                    </Space>}
+                                />
+                            </List.Item>
+                        )}
+                    />
+                </Panel>
+                <Panel header="Nearby Gyms" key="nearby_gyms">
+                    <List
+                        bordered
+                        dataSource={props.gyms}
+                        renderItem={item => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    title={item["name"]}
+                                    description={<Space direction="vertical">
+                                        <p>({item["longitude"]}, {item["latitude"]})<br/>
+                                            {item.description}</p>
+                                    </Space>}
+                                />
+                            </List.Item>
+                        )}
+                    />
+                </Panel>
+            </Collapse>
         </>
     ) : (
         <h2>The Result Column is empty.</h2>
