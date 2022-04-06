@@ -161,7 +161,7 @@ function DisplayMap(props) {
     zoom: 13,
     scrollWheelZoom: true
   }, /*#__PURE__*/React.createElement(TileLayer, {
-    attribution: "\xA9 <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
+    attribution: "\xA9 <a href=\"https://osm.org/copyright\">OpenStreetMap</a> contributors",
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   }), /*#__PURE__*/React.createElement(React.Fragment, null, Object.keys(props.destination).length !== 0 ? /*#__PURE__*/React.createElement(DestPosition, null) : null, props.parks.map(item => /*#__PURE__*/React.createElement(Marker, {
     position: [item.latitude, item.longitude],
