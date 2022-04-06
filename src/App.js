@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Layout, AutoComplete, Input, Space, List, Divider, Collapse } from 'antd';
+import { Layout, AutoComplete, Input, Space, List, Collapse } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from 'leaflet';
@@ -161,7 +161,7 @@ function DisplayMap(props) {
     zoom: 13,
     scrollWheelZoom: true
   }, /*#__PURE__*/React.createElement(TileLayer, {
-    attribution: "\xA9 <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
+    attribution: "\xA9 <a href=\"https://osm.org/copyright\">OpenStreetMap</a> contributors",
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   }), /*#__PURE__*/React.createElement(React.Fragment, null, Object.keys(props.destination).length !== 0 ? /*#__PURE__*/React.createElement(DestPosition, null) : null, props.parks.map(item => /*#__PURE__*/React.createElement(Marker, {
     position: [item.latitude, item.longitude],
@@ -175,8 +175,6 @@ function DisplayMap(props) {
 
 
 function ResultColumn(props) {
-  // In this sample implementation, we don't have enough data to conduct a search, so this is only 
-  // a responsive component displaying fixed contents including a list of weather, parks and gyms
   // local values / variables can also be used as components
   // contains an empty column / results with 3 lists: weather forecast for nearby areas, parks and gyms
   // (multiple components should be enclosed with <></> (i.e., <div></div>))
@@ -184,8 +182,7 @@ function ResultColumn(props) {
     Panel
   } = Collapse;
   const resultContent = props.inputVal !== "" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", null, "Search result of \"", props.inputVal, "\":"), /*#__PURE__*/React.createElement(Collapse, {
-    defaultActiveKey: ['weather_forcast'],
-    onChange: callback
+    defaultActiveKey: ['weather_forcast']
   }, /*#__PURE__*/React.createElement(Panel, {
     header: "Weather Forecast",
     key: "weather_forcast"
@@ -220,59 +217,7 @@ function ResultColumn(props) {
         direction: "vertical"
       }, /*#__PURE__*/React.createElement("p", null, "(", item["longitude"], ", ", item["latitude"], ")", /*#__PURE__*/React.createElement("br", null), item.description))
     }))
-  })))) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty."); // const resultContent = props.inputVal !== "" ? (
-  //     <>
-  //         <h2>Search result of "{props.inputVal}":</h2>
-  //         <Divider>Weather Forecast</Divider>
-  //         <List
-  //             bordered
-  //             dataSource={props.weathers}
-  //             renderItem={item => (
-  //                 <List.Item>
-  //                     <List.Item.Meta
-  //                         title={item["area"]}
-  //                         description={item["forecast"]}
-  //                     />
-  //                 </List.Item>
-  //             )}
-  //         />
-  //         <Divider>Nearby Parks</Divider>
-  //         <List
-  //             bordered
-  //             dataSource={props.parks}
-  //             renderItem={item => (
-  //                 <List.Item>
-  //                     <List.Item.Meta
-  //                         title={item["name"]}
-  //                         description={<Space direction="vertical">
-  //                             <p>({item["longitude"]}, {item["latitude"]})<br/>
-  //                                 {item.description}</p>
-  //                         </Space>}
-  //                     />
-  //                 </List.Item>
-  //             )}
-  //         />
-  //         <Divider>Nearby Gyms</Divider>
-  //         <List
-  //             bordered
-  //             dataSource={props.gyms}
-  //             renderItem={item => (
-  //                 <List.Item>
-  //                     <List.Item.Meta
-  //                         title={item["name"]}
-  //                         description={<Space direction="vertical">
-  //                             <p>({item["longitude"]}, {item["latitude"]})<br/>
-  //                                 {item.description}</p>
-  //                         </Space>}
-  //                     />
-  //                 </List.Item>
-  //             )}
-  //         />
-  //     </>
-  // ) : (
-  //     <h2>The Result Column is empty.</h2>
-  // );
-
+  })))) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty.");
   return /*#__PURE__*/React.createElement(React.Fragment, null, resultContent);
 } // helper function: create a post request with this template
 
@@ -288,10 +233,6 @@ function create_postREQ(body = null) {
   };
   if (body != null) payload["body"] = JSON.stringify(body);
   return payload;
-}
-
-function callback(key) {
-  console.log(key);
 }
 
 export { App, create_postREQ };
