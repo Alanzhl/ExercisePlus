@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Layout, AutoComplete, Input, Space, List, Collapse } from 'antd';
+import { Layout, AutoComplete, Input, Space, List, Collapse, Button, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from 'leaflet';
@@ -181,7 +181,17 @@ function ResultColumn(props) {
   const {
     Panel
   } = Collapse;
-  const resultContent = props.inputVal !== "" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", null, "Search result of \"", props.inputVal, "\":"), /*#__PURE__*/React.createElement(Collapse, {
+  const resultContent = props.inputVal !== "" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
+    style: {
+      float: "right"
+    },
+    type: "primary",
+    href: "https://localhost34.auth.us-east-1.amazoncognito.com/signup?client_id=6hnovsu5fc95omp92ficdvgum9&response_type=code&scope=email+openid&redirect_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/"
+  }, "Register / Login"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("h2", {
+    style: {
+      padding: '10px'
+    }
+  }, "Search result of \"", props.inputVal, "\":"), /*#__PURE__*/React.createElement(Collapse, {
     defaultActiveKey: ['weather_forcast']
   }, /*#__PURE__*/React.createElement(Panel, {
     header: "Weather Forecast",
@@ -217,7 +227,17 @@ function ResultColumn(props) {
         direction: "vertical"
       }, /*#__PURE__*/React.createElement("p", null, "(", item["longitude"], ", ", item["latitude"], ")", /*#__PURE__*/React.createElement("br", null), item.description))
     }))
-  })))) : /*#__PURE__*/React.createElement("h2", null, "The Result Column is empty.");
+  })))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
+    style: {
+      float: "right"
+    },
+    type: "primary",
+    href: "https://localhost34.auth.us-east-1.amazoncognito.com/signup?client_id=6hnovsu5fc95omp92ficdvgum9&response_type=code&scope=email+openid&redirect_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/"
+  }, "Register / Login"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("h2", {
+    style: {
+      padding: '10px'
+    }
+  }, "The Result Column is empty."));
   return /*#__PURE__*/React.createElement(React.Fragment, null, resultContent);
 } // helper function: create a post request with this template
 

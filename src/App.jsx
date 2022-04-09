@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "./App.css";
-import { Layout, AutoComplete, Input, Space, List, Collapse } from 'antd';
+import { Layout, AutoComplete, Input, Space, List, Collapse, Button, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { MapContainer, TileLayer, Marker, Popup, useMap} from "react-leaflet";
 import L from 'leaflet';
@@ -206,7 +206,9 @@ function ResultColumn(props) {
 
     const resultContent = props.inputVal !== "" ? (
         <>
-            <h2>Search result of "{props.inputVal}":</h2>
+            <Button style={{float:"right"}} type="primary" href="https://localhost34.auth.us-east-1.amazoncognito.com/signup?client_id=6hnovsu5fc95omp92ficdvgum9&response_type=code&scope=email+openid&redirect_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/">Register / Login</Button>
+            <Divider/>
+            <h2 style={{padding:'10px'}}>Search result of "{props.inputVal}":</h2>
             <Collapse defaultActiveKey={['weather_forcast']}>
                 <Panel header="Weather Forecast" key="weather_forcast">
                     <List
@@ -259,7 +261,11 @@ function ResultColumn(props) {
             </Collapse>
         </>
     ) : (
-        <h2>The Result Column is empty.</h2>
+        <>
+        <Button style={{float:"right"}} type="primary" href="https://localhost34.auth.us-east-1.amazoncognito.com/signup?client_id=6hnovsu5fc95omp92ficdvgum9&response_type=code&scope=email+openid&redirect_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/">Register / Login</Button>
+        <Divider/>
+        <h2 style={{padding:'10px'}}>The Result Column is empty.</h2>
+        </>
     );
 
     return (<>
