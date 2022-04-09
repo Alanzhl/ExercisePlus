@@ -185,6 +185,11 @@ function ResultColumn(props) {
     style: {
       float: "right"
     },
+    href: "https://localhost34.auth.us-east-1.amazoncognito.com/logout?client_id=6hnovsu5fc95omp92ficdvgum9&logout_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/"
+  }, "Logout"), /*#__PURE__*/React.createElement(Button, {
+    style: {
+      float: "right"
+    },
     type: "primary",
     href: "https://localhost34.auth.us-east-1.amazoncognito.com/signup?client_id=6hnovsu5fc95omp92ficdvgum9&response_type=code&scope=email+openid&redirect_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/"
   }, "Register / Login"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("h2", {
@@ -228,6 +233,11 @@ function ResultColumn(props) {
       }, /*#__PURE__*/React.createElement("p", null, "(", item["longitude"], ", ", item["latitude"], ")", /*#__PURE__*/React.createElement("br", null), item.description))
     }))
   })))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
+    style: {
+      float: "right"
+    },
+    href: "https://localhost34.auth.us-east-1.amazoncognito.com/logout?client_id=6hnovsu5fc95omp92ficdvgum9&logout_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/"
+  }, "Logout"), /*#__PURE__*/React.createElement(Button, {
     style: {
       float: "right"
     },

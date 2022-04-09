@@ -206,6 +206,7 @@ function ResultColumn(props) {
 
     const resultContent = props.inputVal !== "" ? (
         <>
+            <Button style={{float:"right"}} href="https://localhost34.auth.us-east-1.amazoncognito.com/logout?client_id=6hnovsu5fc95omp92ficdvgum9&logout_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/">Logout</Button>
             <Button style={{float:"right"}} type="primary" href="https://localhost34.auth.us-east-1.amazoncognito.com/signup?client_id=6hnovsu5fc95omp92ficdvgum9&response_type=code&scope=email+openid&redirect_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/">Register / Login</Button>
             <Divider/>
             <h2 style={{padding:'10px'}}>Search result of "{props.inputVal}":</h2>
@@ -262,6 +263,7 @@ function ResultColumn(props) {
         </>
     ) : (
         <>
+        <Button style={{float:"right"}} href="https://localhost34.auth.us-east-1.amazoncognito.com/logout?client_id=6hnovsu5fc95omp92ficdvgum9&logout_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/">Logout</Button>
         <Button style={{float:"right"}} type="primary" href="https://localhost34.auth.us-east-1.amazoncognito.com/signup?client_id=6hnovsu5fc95omp92ficdvgum9&response_type=code&scope=email+openid&redirect_uri=https://dev.d286e2j1zvdll3.amplifyapp.com/">Register / Login</Button>
         <Divider/>
         <h2 style={{padding:'10px'}}>The Result Column is empty.</h2>
