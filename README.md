@@ -18,13 +18,24 @@
 [Click here](https://dev.d286e2j1zvdll3.amplifyapp.com/) to visit the deployed service!
 
 
+# Simple Illustration
+
+Our application webpage displays as follows:
+![template snapshot](/template_snapshot.jpg)
+- The page can be visited locally on port 3000. 
+- The right top of the page includes some options to register/login/logout from the service, which are empowered by AWS Cognito.
+- The left side of the page contains a search bar at the top with a map below. Click on the search bar and start searching for a place where you decide to do a workout! Possible matching results would be displayed in real-time when there is a change in the text field, which can also be selected.
+- The map on the left shows resulting positions in Singapore. The search destination would be marked red, and would be surrounded by blue marks (representing gyms) and green marks (representing parks) nearby. The map can be zoomed in/out, and the marks can be clicked for names and desciptions.
+- The right side should contain the search results. It would suggest the name of the search result, followed by a list of nearby weather forecast, a list of nearby gyms and a list of parks filtered by distances and ordered by number of favors as priorities.
+
+
 # Local Setup Guidance (for Linux)
 
 This guidance might only be useful for users wanting to test the application locally.
 
 ## Step 0: Preparation
 
-make sure that Git is installed within the system.
+Please make sure that Git is installed within the system. Clone the project to the local repository.
 
 ## Step 1: Node and React
 
@@ -40,13 +51,3 @@ npm run compile    // compile all the .jsx files into their .js counterpart in o
 npm run watch      // compile all the .jsx files in real-time
 npm start          // start the frontend server (visit it on port 3000)
 ```
-
-## Step 3: Simple Illustration
-
-The template page displays as follows:
-![template snapshot](/template_snapshot.jpg)
-- The page can be visited locally on port 3000. 
-- The right top of the page includes some options to register/login/logout from the service, which are empowered by AWS Cognito.
-- The left side of the page contains a search bar at the top with a map below. Click on the search bar and start searching for a place where you decide to do a workout! Possible matching results would be displayed in real-time when there is a change in the text field, which can also be selected.
-- The map on the left shows resulting positions in Singapore. The search destination would be marked red, and would be surrounded by blue marks (representing gyms) and green marks (representing parks) nearby. The map can be zoomed in/out, and the marks can be clicked for names and desciptions.
-- The right side should contain the search results. It would suggest the name of the search result, followed by a list of nearby weather forecast, a list of nearby gyms and a list of parks filtered by distances and ordered by number of favors as priorities.

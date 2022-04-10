@@ -1,3 +1,13 @@
+# ***ExercisePlus_SearchFunction***:
+# 
+# This lambda function is processes the decided search keyword from the end user.
+# More detailed location information of the search destination would be fetched from 
+# OneMap API, which are used to select the matching gyms and parks from DynamoDB 
+# withing a certain distance range. The function would also query the real time 
+# weather API provided at data.gov.sg, and collect the 2-hour weather forecast for
+# nearby areas.
+
+
 # import the json utility package since we will be working with a JSON object
 import json
 # import the AWS SDK (for Python the package name is boto3)
@@ -16,6 +26,7 @@ from math import radians, cos, sin, asin, sqrt
 
 API_WEATHER = "https://api.data.gov.sg/v1/environment/2-hour-weather-forecast"
 API_ONEMAP = "https://developers.onemap.sg/commonapi/search"
+# default distance limit for gyms and parks selection
 DEFAULT_DISTANCE = 2000
 
 # create a DynamoDB object using the AWS SDK
@@ -71,7 +82,7 @@ def lambda_handler(event, context):
         nearbyAreas = heapq.nsmallest(3, distanceQueue)
         while len(nearbyAreas) > 1 and nearbyAreas[-1][0] > 1.5 * DEFAULT_DISTANCE:
             nearbyAreas.pop(-1)
-        # TODO: step 2: retrieve the nearyby weather forecasts
+        # step 2: retrieve the nearyby weather forecasts
         for area in nearbyAreas:
             for item in weatherResults["items"][0]["forecasts"]:
                 if item["area"] == area[1]:

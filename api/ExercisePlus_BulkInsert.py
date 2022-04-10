@@ -1,3 +1,11 @@
+# ***ExercisePlus_BulkInsert***:
+# 
+# This lambda function is triggered everytime there is an upload event at the S3 storage.
+# The function would retrieve the bucket name and filename from S3 event notification, 
+# and access the raw dataset by reading the file. Then, it would transform the data and 
+# insert them in batch into the respective table in DynamoDB.
+
+
 import json
 import boto3
 from urllib.parse import unquote_plus
@@ -5,6 +13,7 @@ from urllib.parse import unquote_plus
 
 s3_client = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
+
 
 def lambda_handler(event, context):
     for record in event['Records']:
@@ -15,12 +24,12 @@ def lambda_handler(event, context):
         text = data['Body'].read().decode('utf-8')
         text_json = json.loads(text)
         
-        # step 2: write to dynamodb
+        # step 2: write to dynamodb in batch
         table = None
         if key == "gyms-my.txt":
-            table = dynamodb.Table('ExercisePlus-Gyms')    # change to your table name
+            table = dynamodb.Table('ExercisePlus-Gyms')    # specified table name in DynamoDB
         elif key == "parks-my.txt":
-            table = dynamodb.Table('ExercisePlus-Parks')    # change to your table name
+            table = dynamodb.Table('ExercisePlus-Parks')    # specified table name in DynamoDB
         if table == None:
             return {
                 'statusCode': 200,

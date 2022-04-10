@@ -1,3 +1,11 @@
+# ***ExercisePlus_GetSearchOptions***:
+# 
+# This lambda function is used to generate possible matching results for a fuzzy search.
+# Every time the user changes the search keyword, a request to get the current matching
+# results would be sent to this function, which forwards the request to OneMap API, 
+# processes the response from the API and returns the displayable results back to the frontend.
+
+
 # import the json utility package since we will be working with a JSON object
 import json
 # import 'request' package to handle API requests
